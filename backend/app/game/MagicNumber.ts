@@ -1,147 +1,90 @@
 import { isNull } from './../utils/FuncUtils';
 import { Socket } from 'socket.io';
-import uuid = require('uuid');
+import Game from './Game';
+import Player from '../models/Player';
 
-class Player {
-    id: string;
-    socket: Socket;
-    nickname: string;
-    points = 0;
-
-    constructor(socket: Socket, nickname: string) {
-        this.id = uuid.v4();
-        this.socket = socket;
-        this.nickname = nickname;
-    }
-
-    toJSON(): object {
-        return {
-            'name': this.nickname,
-            'points': this.points
-        };
-    }
-}
-
-class Game {
-    players: Player[];
+export default class MagicNumberGame extends Game {
     magicNumber: number;
-    begin: Date;
-    end: Date;
 
-    constructor(players: Player[] = []) {
-        this.players = players;
-    }
-
-    addPlayer(player: Player): void {
-        this.players.push(player);
+    constructor() {
+        super('magicnumber');
     }
 
     startGame(): void {
-        for (const player of this.players) {
-            player.points = 0;
-        }
-        this.begin = new Date();
+        super.startGame();
         this.updateMagicNumber();
-        this.players.forEach(({ socket }) => {
-            socket.emit('magicnumber::gameStart');
-        });
     }
 
-    updateMagicNumber() {
+    updateMagicNumber(): void {
         this.magicNumber = Math.floor(Math.random() * 1337);
         console.log(this.magicNumber);
     }
 
-    endGame(): void {
-        this.end = new Date();
-    }
-
-    isPlayerWinner(playerId: string): boolean {
-        return this.players.find((p) => p.id === playerId)?.points === 3;
-    }
-
-    notifyOthers(playerId: string, callback: (player: Player) => void): void {
-        this.players.filter((p) => p.id !== playerId).forEach(callback);
-    }
-
-    tryNumber(numberTry: number, playerId: string): void {
+    onTryNumber(numberTry: number, playerId: string): void {
         const player = this.players.find((p) => p.id === playerId);
         if (isNull(player)) return;
 
         if (numberTry === this.magicNumber) {
             player.points++;
-            player.socket.emit('magicnumber::playerInfo', {
+            this.emitEvent(player.socket, 'playerInfo', {
                 id: player.id,
                 nickname: player.nickname,
                 points: player.points
             });
 
             if (this.isPlayerWinner(player.id)) {
-                player.socket.emit('magicnumber::win');
-                this.notifyOthers(player.id, (p) => p.socket.emit('magicnumber::lose'));
+                this.emitEvent(player.socket, 'win');
+                this.notifyOthers(player.id, (p) => this.emitEvent(p.socket, 'lose'));
             } else {
-                player.socket.emit('magicnumber::winPoint');
+                this.emitEvent(player.socket, 'winPoint');
                 this.notifyOthers(
                     player.id,
-                    (p) => p.socket.emit('magicnumber::losePoint', { playerName: player.nickname })
+                    (p) => this.emitEvent(p.socket, 'losePoint', { playerName: player.nickname })
                 );
                 this.updateMagicNumber();
             }
         } else if (numberTry < this.magicNumber) {
-            player.socket.emit('magicnumber::numberIsMore');
+            this.emitEvent(player.socket, 'numberIsMore');
         } else {
-            player.socket.emit('magicnumber::numberIsLess');
+            this.emitEvent(player.socket, 'numberIsLess');
         }
     }
 
-    toJSON(): object {
-        return {
-            'beg': this.begin.toISOString(),
-            'end': this.end.toISOString(),
-            'players': this.players.map((p) => p.toJSON())
-        };
-    }
-}
-
-let game: Game;
-
-export const onClient = (socket: Socket): void => {
-    console.log('User connected');
-
-    socket.on('disconnect', () => {
-        console.log('Got disconnect!');
-        const i = game?.players?.findIndex(({ socket }) => socket.id === socket.id);
-        game?.players?.splice(i, 1);
-    });
-
-    socket.emit('magicnumber::hello');
-
-    socket.on('magicnumber::initialize', payload => {
-        if (!game) {
-            game = new Game();
-        }
-
-        if (game.players.length >= 2) {
-            socket.emit('magicnumber::gameFull');
+    onInitialize(socket: Socket, payload: any): void {
+        if (this.players.length >= 2) {
+            this.emitEvent(socket, 'gameFull');
             return;
         }
 
         const player = new Player(socket, payload.nickname);
-        game.addPlayer(player);
+        this.addPlayer(player);
         console.log('new name received: ', player.nickname);
 
-        socket.emit('magicnumber::playerInfo', {
+        this.emitEvent(socket, 'playerInfo', {
             id: player.id,
             nickname: player.nickname,
             points: player.points
         });
 
-        if (game.players.length === 2) {
-            game.startGame();
+        if (this.players.length === 2) {
+            this.startGame();
         }
-    });
+    }
 
-    socket.on('magicnumber::tryNumber', payload => {
-        game.tryNumber(payload.number, payload.id);
-    });
-};
+    onClient(socket: Socket): void {
+        console.log('User connected to MagicNumber');
+
+        socket.on('disconnect', () => {
+            console.log('Got disconnect!');
+            this.removePlayer(socket.id);
+        });
+
+        this.onEvent(socket, 'initialize', payload => {
+            this.onInitialize(socket, payload);
+        });
+
+        this.onEvent(socket, 'tryNumber', payload => {
+            this.onTryNumber(payload.number, payload.id);
+        });
+    }
+}

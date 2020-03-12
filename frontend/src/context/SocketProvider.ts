@@ -1,9 +1,10 @@
 import { createContext } from "react";
-import { Player } from "../models";
+import Player from "../models/Player";
 
-type SocketContextProps = {
+export type SocketContextProps = {
     io: SocketIOClient.Socket;
-    player: Player;
+    player?: Player;
+    updatePlayer: (player: Player) => void
 }
 
 export const SocketContext = createContext<Partial<SocketContextProps>>({});
