@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "023ef8d9aabb7108ee9387349b7f7e69",
+    "revision": "51ae78efe8f87fdb91004a7edee85d8f",
     "url": "/CrossPWAGame/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/CrossPWAGame/static/js/2.46ae379f.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "a162f1be2fe4402545e2",
-    "url": "/CrossPWAGame/static/js/main.2e01a204.chunk.js"
+    "revision": "1c12e51a419ab2dd0637",
+    "url": "/CrossPWAGame/static/js/main.d53624c3.chunk.js"
   },
   {
     "revision": "d46e8fd943a41e4e3307",
