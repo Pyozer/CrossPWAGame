@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import Player from "./models/Player";
 import AskNickname from "./components/AskNickname";
 
-const io = socketIO("http://localhost:80")
+const io = socketIO("https://crosspwagame.herokuapp.com/")
 
 const App = () => {
   const [player, setPlayer] = useState<Player>();
