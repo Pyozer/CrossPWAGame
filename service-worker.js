@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/CrossPWAGame/precache-manifest.c53a8030440b2c12f01bfe5bfad5e704.js"
+  "/CrossPWAGame/precache-manifest.427bcda3c3d922d13be8f3da01ee3740.js"
 );
 
 self.addEventListener('message', (event) => {
