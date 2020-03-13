@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { SocketContext, SocketContextProps } from "./context/SocketProvider";
+import { SocketContext } from "./context/SocketProvider";
 import socketIO from 'socket.io-client';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import HomeMagicNumber from "./pages/MagicNumber/HomeMagicNumber";
+import MagicNumber from "./pages/MagicNumber";
 import Home from "./pages/Home";
 import Player from "./models/Player";
+import AskNickname from "./components/AskNickname";
 
 const io = socketIO("http://localhost:80")
 
 const App = () => {
   const [player, setPlayer] = useState<Player>();
 
+  useEffect(() => {
+    io.on('Game::playerInfo', (player: any) => {
+      console.log("On playerInfo", player);
+      
+      updatePlayer(player)
+    });
+  }, []);
+
   const updatePlayer = (player?: Player) => {
     setPlayer(player);
+  }
+
+  const onNickname = (nickname: string) => {
+    io.emit("Game::sendNickname", nickname);
   }
 
   return (
@@ -34,14 +47,18 @@ const App = () => {
           <div className="hero-body">
             <div className="container">
               <header className="bd-index-header">
-                <Switch>
-                  <Route exact path="/">
-                    <Home />
-                  </Route>
-                  <Route path="/magicnumber">
-                    <HomeMagicNumber />
-                  </Route>
-                </Switch>
+                {!player ? (
+                  <AskNickname onChange={onNickname} />
+                ) : (
+                    <Switch>
+                      <Route exact path="/">
+                        <Home />
+                      </Route>
+                      <Route path="/magicnumber">
+                        <MagicNumber />
+                      </Route>
+                    </Switch>
+                  )}
               </header>
             </div>
           </div>
@@ -56,8 +73,8 @@ const App = () => {
             </div>
           </div>
         </section>
-      </SocketContext.Provider>
-    </Router>
+      </SocketContext.Provider >
+    </Router >
   );
 };
 

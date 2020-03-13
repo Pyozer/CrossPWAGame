@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
-import Message from "../../models/Message";
-import { SocketContext } from "../../context/SocketProvider";
+import Message from "../models/Message";
+import { SocketContext } from "../context/SocketProvider";
+import WaitingGame from "../components/WaitingGame";
 
 const MagicNumber = () => {
+  const [isGameStarted, setGameStarted] = useState(false);
+
   const [playerNumber, setPlayerNumber] = useState('');
   const [message, setMessage] = useState<Message>();
   const [isGameEnd, setGameEnd] = useState<boolean>(false);
   const { io, player } = useContext(SocketContext);
 
   useEffect(() => {
+    io!.on("magicnumber::gameStart", () => {
+      console.log("game started");
+      setGameStarted(true);
+    });
+
+    io!.emit('Game::join', 'magicnumber')
+
     io!.on("magicnumber::winPoint", () => {
       setMessage({ msg: 'You win a point !', isSuccess: true });
       setPlayerNumber('');
@@ -17,17 +27,21 @@ const MagicNumber = () => {
       setMessage({ msg: `You lose this round :/ ${payload.playerName} win a point.`, isSuccess: false });
       setPlayerNumber('');
     });
-    io!.on("magicnumber::win", () => {
-      setMessage({ msg: 'You win !', isSuccess: true });
+    io!.on("magicnumber::gameEnd", (status: any) => {
+      if (status === 'win') {
+        setMessage({ msg: 'You win !', isSuccess: true });
+      } else {
+        setMessage({ msg: 'You lose !', isSuccess: false });
+      }
       setPlayerNumber('');
       setGameEnd(true);
     });
-    io!.on("magicnumber::lose", () => {
-      setMessage({ msg: 'You lose !', isSuccess: false });
+    io!.on("magicnumber::gameForceEnd", () => {
+      setMessage({ msg: 'Game stopped ! Due to player disconnection', isSuccess: false });
       setPlayerNumber('');
       setGameEnd(true);
     });
-  }, [io])
+  }, [])
 
   useEffect(() => {
     io!.once("magicnumber::numberIsLess", () => {
@@ -43,6 +57,8 @@ const MagicNumber = () => {
   };
 
   const sendNumber = () => {
+    console.log(playerNumber);
+    
     if (!playerNumber) return;
 
     io!.emit("magicnumber::tryNumber", {
@@ -56,6 +72,10 @@ const MagicNumber = () => {
     return <div className={`notification is-${message.isSuccess ? 'success' : 'danger'}`}>
       {message.msg}
     </div>
+  }
+
+  if (!isGameStarted) {
+    return <WaitingGame />
   }
 
   return (

@@ -18,7 +18,6 @@ module.exports = {
         "no-else-return": ["error", { "allowElseIf": false }],
         "no-useless-return": "error",
         "no-return-await": "error",
-        "class-methods-use-this": ["error"],
         "curly": ["error", "multi-line"],
         "dot-notation": ["error", { allowKeywords: true }],
         "eqeqeq": ["error", "always", { null: "ignore" }],

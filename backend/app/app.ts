@@ -2,7 +2,7 @@ import io from 'socket.io';
 import express from 'express';
 import dotenv from 'dotenv';
 import { isNull } from './utils/FuncUtils';
-import MagicNumberGame from './game/MagicNumber';
+import AppGame from './AppGame';
 
 dotenv.config();
 if (isNull(process.env.PORT)) {
@@ -18,9 +18,4 @@ const server = app.listen(PORT, () => {
 });
 
 const socketio = io(server);
-
-const magicNumberGame = new MagicNumberGame();
-
-socketio.on('connection', (socket) => {
-    magicNumberGame.onClient(socket);
-});
+new AppGame(socketio);
