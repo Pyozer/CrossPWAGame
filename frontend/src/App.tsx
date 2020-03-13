@@ -29,7 +29,7 @@ const App = () => {
   }
 
   return (
-    <Router>
+    <Router basename='/CrossPWAGame'>
       <SocketContext.Provider value={{ io, player, updatePlayer }}>
         <section className="hero is-fullheight is-light">
           <div className="hero-head">
