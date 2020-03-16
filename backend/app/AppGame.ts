@@ -17,10 +17,10 @@ export default class AppGame {
 
     private initListeners(): void {
         this.io.on('connection', (socket: SocketIO.Socket) => {
-            console.log('[GameServer.ts] > onConnection: ', socket.id);
-
             socket.on('disconnect', () => this.onDisconnect(socket));
-            socket.on('Game::sendNickname', nickname => this.onSendNickname(socket, nickname));
+            socket.on('Game::sendNickname', nickname =>
+                this.onSendNickname(socket, nickname)
+            );
             socket.on('Game::join', game => this.onGameJoin(socket, game));
         });
     }
@@ -28,8 +28,6 @@ export default class AppGame {
     /* Socket Client listeners */
     private onDisconnect(socket: SocketIO.Socket): void {
         delete this.users[socket.id];
-
-        console.log('[GameServer.ts] > onDisconnectListener: ', socket.id);
     }
 
     private onSendNickname(socket: SocketIO.Socket, nickname: string): void {
@@ -39,14 +37,10 @@ export default class AppGame {
             nickname,
             points: 0
         });
-
-        console.log('[GameServer.ts] > onSendNicknameListener: ', socket.id, nickname);
     }
 
     private onGameJoin(socket: SocketIO.Socket, game: string): void {
         const player = new Player(socket, this.users[socket.id].nickname);
-
-        console.log('[GameServer.ts] > onGameJoinListener: ', socket.id, game);
 
         let gameInstance: Game = this.findAvailableGame(game);
         if (isNull(gameInstance)) {
@@ -62,13 +56,15 @@ export default class AppGame {
     }
 
     private findAvailableGame(gameName: string): Game {
-        return this.games.find((game) => game.name === gameName && !game.isGameFull());
+        return this.games.find(game => {
+            return game.name === gameName && !game.isGameFull();
+        });
     }
 
     private createNewGame(gameName: string): Game {
         if (gameName === 'magicnumber') {
             return new MagicNumberGame();
         }
-        throw new Error('Game unknown !');
+        throw new Error('Unknown game !');
     }
 }

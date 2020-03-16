@@ -9,11 +9,10 @@ class Player {
         this.socket = socket;
         this.nickname = nickname;
     }
-
     toJSON(): object {
         return {
-            'name': this.nickname,
-            'points': this.points
+            name: this.nickname,
+            points: this.points
         };
     }
 }

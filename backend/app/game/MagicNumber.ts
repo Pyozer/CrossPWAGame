@@ -20,7 +20,7 @@ export default class MagicNumberGame extends Game {
     }
 
     onTryNumber(numberTry: number, playerId: string): void {
-        const player = this.players.find((p) => p.socket.id === playerId);        
+        const player = this.players.find(p => p.socket.id === playerId);
         if (isNull(player)) return;
 
         if (numberTry === this.magicNumber) {
@@ -35,9 +35,10 @@ export default class MagicNumberGame extends Game {
                 this.endGame(player);
             } else {
                 this.emitEvent(player.socket, 'winPoint');
-                this.notifyOthers(
-                    player.socket.id,
-                    (p) => this.emitEvent(p.socket, 'losePoint', { playerName: player.nickname })
+                this.notifyOthers(player.socket.id, p =>
+                    this.emitEvent(p.socket, 'losePoint', {
+                        playerName: player.nickname
+                    })
                 );
                 this.updateMagicNumber();
             }
@@ -50,10 +51,7 @@ export default class MagicNumberGame extends Game {
 
     protected initPlayerListeners(socket: Socket): void {
         super.initPlayerListeners(socket);
-        console.log('User connected to MagicNumber');
-
         this.onEvent(socket, 'tryNumber', payload => {
-            console.log('[MagicNumber.ts] > onTryNumber', payload);
             this.onTryNumber(payload.number, payload.id);
         });
     }

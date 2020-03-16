@@ -34,7 +34,9 @@ export default abstract class Game {
     }
 
     public playerDisconnected(playerSocketId: string): void {
-        const i = this.players.findIndex(({ socket }) => socket.id === playerSocketId);
+        const i = this.players.findIndex(
+            ({ socket }) => socket.id === playerSocketId
+        );
         if (i === -1) return;
 
         this.players.splice(i, 1);
@@ -53,20 +55,24 @@ export default abstract class Game {
     public endGame(playerWinner: Player): void {
         this.end = new Date();
         this.emitEvent(playerWinner.socket, 'gameEnd', 'win');
-        this.notifyOthers(playerWinner.socket.id, (p) => this.emitEvent(p.socket, 'gameEnd', 'lose'));
+        this.notifyOthers(playerWinner.socket.id, p =>
+            this.emitEvent(p.socket, 'gameEnd', 'lose')
+        );
         // TODO: Save in file the game using toJSON()
     }
-    
+
     private forceEndGame(): void {
         this.notifyAll(({ socket }) => this.emitEvent(socket, 'gameForceEnd'));
     }
 
     public isPlayerWinner(playerId: string): boolean {
-        return this.players.find((p) => p.socket.id === playerId)?.points === 3;
+        return this.players.find(p => p.socket.id === playerId)?.points === 3;
     }
 
-    protected notifyOthers(playerIdExclude: string, callback: PlayerCallback): void {
-        this.players.filter((p) => p.socket.id !== playerIdExclude).forEach(callback);
+    protected notifyOthers(playerId: string, callback: PlayerCallback): void {
+        this.players
+            .filter(p => p.socket.id !== playerId)
+            .forEach(callback);
     }
     protected notifyAll(callback: PlayerCallback): void {
         this.players.forEach(callback);
@@ -76,22 +82,19 @@ export default abstract class Game {
         return socket.emit(`${this.name}::${event}`, payload);
     }
 
-    protected onEvent(socket: Socket, event: string, callback: (payload: any) => void): void {
-        socket.on(`${this.name}::${event}`, callback);
+    protected onEvent(socket: Socket, event: string, cb: (payload: any) => void): void {
+        socket.on(`${this.name}::${event}`, cb);
     }
 
     protected initPlayerListeners(socket: Socket): void {
-        socket.on('disconnect', () => {
-            console.log('Got disconnect in game!');
-            this.playerDisconnected(socket.id);
-        });
+        socket.on('disconnect', () => this.playerDisconnected(socket.id));
     }
 
     protected toJSON(): object {
         return {
-            'beg': this.begin.toISOString(),
-            'end': this.end.toISOString(),
-            'players': this.players.map((p) => p.toJSON())
+            beg: this.begin.toISOString(),
+            end: this.end.toISOString(),
+            players: this.players.map(p => p.toJSON())
         };
     }
 }
