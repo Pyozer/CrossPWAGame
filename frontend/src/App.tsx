@@ -24,10 +24,6 @@ const App = () => {
     setPlayer(player);
   }
 
-  const onNickname = (nickname: string) => {
-    io.emit("Game::sendNickname", nickname);
-  }
-
   return (
     <Router basename='/CrossPWAGame'>
       <SocketContext.Provider value={{ io, player, updatePlayer }}>
@@ -48,7 +44,7 @@ const App = () => {
             <div className="container">
               <header className="bd-index-header">
                 {!player ? (
-                  <AskNickname onChange={onNickname} />
+                  <AskNickname />
                 ) : (
                     <Switch>
                       <Route exact path="/">

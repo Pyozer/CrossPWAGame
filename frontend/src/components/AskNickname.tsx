@@ -1,17 +1,17 @@
-import React, { useState, FunctionComponent } from "react";
+import React, { useState, useContext } from "react";
+import { SocketContext } from "../context/SocketProvider";
 
-type AskNicknameProps = {
-  onChange: (nickname: string) => void;
-}
-
-const AskNickname: FunctionComponent<AskNicknameProps> = ({ onChange }) => {
+const AskNickname = () => {
   const [nickname, setNickname] = useState("");
+  const { io } = useContext(SocketContext);
 
   const handleNickname = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(event.target.value);
   };
 
-  const sendNickname = () => onChange(nickname);
+  const sendNickname = () => {
+    io!.emit("Game::sendNickname", nickname);
+  };
 
   return (
     <div className="field">

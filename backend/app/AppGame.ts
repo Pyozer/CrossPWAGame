@@ -1,14 +1,12 @@
 import SocketIO from 'socket.io';
 import Player from './models/Player';
-import MagicNumberGame from './game/MagicNumber';
 import Game from './game/Game';
-import { isNull } from './utils/FuncUtils';
 import User from './models/User';
+import GamesManager from './GamesManager';
 
 export default class AppGame {
     private users: Record<string, User> = {};
     private io: SocketIO.Server;
-    private games: Game[] = [];
 
     constructor(io: SocketIO.Server) {
         this.io = io;
@@ -18,14 +16,11 @@ export default class AppGame {
     private initListeners(): void {
         this.io.on('connection', (socket: SocketIO.Socket) => {
             socket.on('disconnect', () => this.onDisconnect(socket));
-            socket.on('Game::sendNickname', nickname =>
-                this.onSendNickname(socket, nickname)
-            );
+            socket.on('Game::sendNickname', name => this.onSendNickname(socket, name));
             socket.on('Game::join', game => this.onGameJoin(socket, game));
         });
     }
 
-    /* Socket Client listeners */
     private onDisconnect(socket: SocketIO.Socket): void {
         delete this.users[socket.id];
     }
@@ -42,29 +37,12 @@ export default class AppGame {
     private onGameJoin(socket: SocketIO.Socket, game: string): void {
         const player = new Player(socket, this.users[socket.id].nickname);
 
-        let gameInstance: Game = this.findAvailableGame(game);
-        if (isNull(gameInstance)) {
-            gameInstance = this.createNewGame(game);
-            this.games.push(gameInstance);
-        }
+        let gameInstance: Game = GamesManager.getInstance().findOrCreateGame(game);
         this.users[socket.id].game = gameInstance;
 
         gameInstance.addPlayer(player);
         if (gameInstance.isGameFull()) {
             gameInstance.startGame();
         }
-    }
-
-    private findAvailableGame(gameName: string): Game {
-        return this.games.find(game => {
-            return game.name === gameName && !game.isGameFull();
-        });
-    }
-
-    private createNewGame(gameName: string): Game {
-        if (gameName === 'magicnumber') {
-            return new MagicNumberGame();
-        }
-        throw new Error('Unknown game !');
     }
 }
