@@ -13,10 +13,10 @@ const GameCard: FunctionComponent<GameCardProps> = (props) => {
         </header>
         <div className="card-content">
             <div className="content">{props.desc}</div>
-            <footer className="card-footer">
-                <Link to={props.pathGame} className="card-footer-item">Play</Link>
-            </footer>
         </div>
+        <footer className="card-footer">
+            <Link to={props.pathGame} className="card-footer-item">Play</Link>
+        </footer>
     </div>
 }
 

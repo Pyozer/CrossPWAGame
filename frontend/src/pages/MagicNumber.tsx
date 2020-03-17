@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
 import Message from "../models/Message";
 import { SocketContext } from "../context/SocketProvider";
 import WaitingGame from "../components/WaitingGame";
+import { useMessage } from "../hooks/useMessage";
 
 const MagicNumber = () => {
   const [isGameStarted, setGameStarted] = useState(false);
 
   const [playerNumber, setPlayerNumber] = useState('');
-  const [message, setMessage] = useState<Message>();
+  const { message, setSuccessMsg, setErrorMsg } = useMessage();
   const [isGameEnd, setGameEnd] = useState<boolean>(false);
   const { io, player } = useContext(SocketContext);
 
@@ -20,24 +22,24 @@ const MagicNumber = () => {
     io!.emit('Game::join', 'magicnumber')
 
     io!.on("magicnumber::winPoint", () => {
-      setMessage({ msg: 'You win a point !', isSuccess: true });
+      setSuccessMsg('You win a point !');
       setPlayerNumber('');
     });
     io!.on("magicnumber::losePoint", (payload: any) => {
-      setMessage({ msg: `You lose this round :/ ${payload.playerName} win a point.`, isSuccess: false });
+      setErrorMsg(`You lose this round :/ ${payload.playerName} win a point.`);
       setPlayerNumber('');
     });
     io!.on("magicnumber::gameEnd", (status: any) => {
       if (status === 'win') {
-        setMessage({ msg: 'You win !', isSuccess: true });
+        setSuccessMsg('You win !');
       } else {
-        setMessage({ msg: 'You lose !', isSuccess: false });
+        setErrorMsg('You lose !');
       }
       setPlayerNumber('');
       setGameEnd(true);
     });
     io!.on("magicnumber::gameForceEnd", () => {
-      setMessage({ msg: 'Game stopped ! Due to player disconnection', isSuccess: false });
+      setErrorMsg('Game stopped ! Due to player disconnection');
       setPlayerNumber('');
       setGameEnd(true);
     });
@@ -45,12 +47,12 @@ const MagicNumber = () => {
 
   useEffect(() => {
     io!.once("magicnumber::numberIsLess", () => {
-      setMessage({ msg: `Number is less than ${playerNumber}!`, isSuccess: false });
+      setErrorMsg(`Number is less than ${playerNumber}!`);
     });
     io!.once("magicnumber::numberIsMore", () => {
-      setMessage({ msg: `Number is more than ${playerNumber}!`, isSuccess: false });
+      setErrorMsg(`Number is more than ${playerNumber}!`);
     });
-  }, [playerNumber, io])
+  }, [playerNumber])
 
   const handleNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPlayerNumber(event.target.value);
@@ -58,7 +60,7 @@ const MagicNumber = () => {
 
   const sendNumber = () => {
     console.log(playerNumber);
-    
+
     if (!playerNumber) return;
 
     io!.emit("magicnumber::tryNumber", {
@@ -94,6 +96,7 @@ const MagicNumber = () => {
         </div>
       )}
       <h5>You have {player?.points} points</h5>
+      {isGameEnd && <Link to='/games'>Back to games</Link>}
     </div>
   );
 };

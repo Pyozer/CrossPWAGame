@@ -1,5 +1,6 @@
-import Player from '../models/Player';
 import { Socket } from 'socket.io';
+import Player from '../models/Player';
+import { saveGameInFile } from './../utils/File';
 
 type PlayerCallback = (player: Player) => void;
 
@@ -58,7 +59,7 @@ export default abstract class Game {
         this.notifyOthers(playerWinner.socket.id, p =>
             this.emitEvent(p.socket, 'gameEnd', 'lose')
         );
-        // TODO: Save in file the game using toJSON()
+        saveGameInFile(this.name, this.toJSON());
     }
 
     private forceEndGame(): void {
