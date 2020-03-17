@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import Player from "../models/Player";
+import { Player } from "../models/Player";
 
 export type SocketContextProps = {
     io: SocketIOClient.Socket;

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import Message from "../models/Message";
+import { Message } from "../models/Message";
 import { SocketContext } from "../context/SocketProvider";
-import WaitingGame from "../components/WaitingGame";
-import { useMessage } from "../hooks/useMessage";
+import { WaitingGame } from "../components";
+import { useMessage } from "../hooks";
 
-const MagicNumber = () => {
+export const MagicNumber = () => {
   const [isGameStarted, setGameStarted] = useState(false);
 
   const [playerNumber, setPlayerNumber] = useState('');
@@ -100,5 +100,3 @@ const MagicNumber = () => {
     </div>
   );
 };
-
-export default MagicNumber;

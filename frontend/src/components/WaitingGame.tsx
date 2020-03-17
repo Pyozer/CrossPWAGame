@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { SocketContext } from "../context/SocketProvider";
 
-const WaitingGame = () => {
+export const WaitingGame = () => {
     const { player } = useContext(SocketContext);
 
     return <div className="box">
@@ -10,5 +10,3 @@ const WaitingGame = () => {
         <progress className="progress is-large is-info" max="100" />
     </div>
 };
-
-export default WaitingGame;

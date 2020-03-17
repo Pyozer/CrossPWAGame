@@ -6,7 +6,8 @@ type GameCardProps = {
     desc: string;
     pathGame: string;
 }
-const GameCard: FunctionComponent<GameCardProps> = (props) => {
+
+export const GameCard: FunctionComponent<GameCardProps> = (props) => {
     return <div className="card">
         <header className="card-header">
             <p className="card-header-title">{props.title}</p>
@@ -19,5 +20,3 @@ const GameCard: FunctionComponent<GameCardProps> = (props) => {
         </footer>
     </div>
 }
-
-export default GameCard;

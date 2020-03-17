@@ -1,7 +1,7 @@
 import React from 'react';
-import GameCard from '../components/GameCard';
+import { GameCard } from '../components';
 
-const Home = () => (
+export const Home = () => (
     <div className="columns">
         <div className="column">
             <GameCard
@@ -25,6 +25,4 @@ const Home = () => (
             />
         </div>
     </div>
-)
-
-export default Home;
+);

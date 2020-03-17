@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Message from '../models/Message';
+import { Message } from '../models/Message';
 
 export const useMessage = () => {
     const [message, setMessage] = useState<Message>();

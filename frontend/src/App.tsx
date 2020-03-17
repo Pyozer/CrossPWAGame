@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { SocketContext } from "./context/SocketProvider";
-import socketIO from 'socket.io-client';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import MagicNumber from "./pages/MagicNumber";
-import Home from "./pages/Home";
-import Player from "./models/Player";
-import AskNickname from "./components/AskNickname";
+import socketIO from 'socket.io-client';
+import { SocketContext } from "./context/SocketProvider";
+import { MagicNumber, Home } from "./pages";
+import { Player } from "./models/Player";
+import { AskNickname } from "./components";
 
 const io = socketIO("https://crosspwagame.herokuapp.com/")
 
-const App = () => {
+export const App = () => {
   const [player, setPlayer] = useState<Player>();
 
   useEffect(() => {
     io.on('Game::playerInfo', (player: any) => {
       console.log("On playerInfo", player);
-      
+
       updatePlayer(player)
     });
   }, []);
@@ -73,5 +72,3 @@ const App = () => {
     </Router >
   );
 };
-
-export default App;
