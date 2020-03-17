@@ -1,8 +1,7 @@
 import { isNull } from './utils/FuncUtils';
-import Game from './game/Game';
-import MagicNumberGame from './game/MagicNumber';
+import { Game, MagicNumberGame } from './game';
 
-export default class GamesManager {
+export class GamesManager {
     private static instance: GamesManager;
     private games: Game[] = [];
 

@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-class Player {
+export class Player {
     socket: Socket;
     nickname: string;
     points = 0;
@@ -17,5 +17,3 @@ class Player {
         };
     }
 }
-
-export default Player;

@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
-import Player from '../models/Player';
+import { Player } from '../models';
 import { saveGameInFile } from './../utils/File';
 
 type PlayerCallback = (player: Player) => void;
 
-export default abstract class Game {
+export abstract class Game {
     name: string;
     players: Player[];
     maxPlayer: number;

@@ -1,6 +1,6 @@
-import Game from '../game/Game';
+import { Game } from '../game';
 
-export default interface User {
+export interface User {
     nickname?: string;
     game?: Game;
 }

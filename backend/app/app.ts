@@ -2,7 +2,7 @@ import io from 'socket.io';
 import express from 'express';
 import dotenv from 'dotenv';
 import { isNull } from './utils/FuncUtils';
-import AppGame from './AppGame';
+import { AppGame } from './AppGame';
 
 dotenv.config();
 if (isNull(process.env.PORT)) {

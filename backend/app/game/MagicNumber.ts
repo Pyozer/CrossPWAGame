@@ -1,8 +1,8 @@
 import { isNull } from './../utils/FuncUtils';
 import { Socket } from 'socket.io';
-import Game from './Game';
+import { Game } from './Game';
 
-export default class MagicNumberGame extends Game {
+export class MagicNumberGame extends Game {
     magicNumber: number;
 
     constructor() {

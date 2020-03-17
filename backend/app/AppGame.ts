@@ -1,10 +1,9 @@
 import SocketIO from 'socket.io';
-import Player from './models/Player';
-import Game from './game/Game';
-import User from './models/User';
-import GamesManager from './GamesManager';
+import { Game } from './game/Game';
+import { Player, User } from './models';
+import { GamesManager } from './GamesManager';
 
-export default class AppGame {
+export class AppGame {
     private users: Record<string, User> = {};
     private io: SocketIO.Server;
 
