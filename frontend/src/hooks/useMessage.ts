@@ -14,6 +14,7 @@ export const useMessage = () => {
     return {
         message,
         setSuccessMsg,
-        setErrorMsg
+        setErrorMsg,
+        setMessage
     };
 }
