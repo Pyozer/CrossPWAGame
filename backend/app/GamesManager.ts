@@ -1,6 +1,6 @@
-import { isNull } from "./utils/FuncUtils";
-import Game from "./game/Game";
-import MagicNumberGame from "./game/MagicNumber";
+import { isNull } from './utils/FuncUtils';
+import Game from './game/Game';
+import MagicNumberGame from './game/MagicNumber';
 
 export default class GamesManager {
     private static instance: GamesManager;

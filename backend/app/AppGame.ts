@@ -37,7 +37,7 @@ export default class AppGame {
     private onGameJoin(socket: SocketIO.Socket, game: string): void {
         const player = new Player(socket, this.users[socket.id].nickname);
 
-        let gameInstance: Game = GamesManager.getInstance().findOrCreateGame(game);
+        const gameInstance: Game = GamesManager.getInstance().findOrCreateGame(game);
         this.users[socket.id].game = gameInstance;
 
         gameInstance.addPlayer(player);
